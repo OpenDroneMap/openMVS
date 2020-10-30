@@ -432,12 +432,12 @@ bool CImageTIFF::ReadHeader()
 			break;
         case 16:
             m_format = PF_GRAYU16;
-            m_stride = 1;
+            m_stride = 2;
             if (ncn != 1 || sampleFormat != TIFF_SAMPLEFORMAT_UINT) implemented = false;
             break;
         case 32:
             m_format = PF_GRAYF32;
-            m_stride = 1;
+            m_stride = 4;
             if (ncn != 1 || sampleFormat != TIFF_SAMPLEFORMAT_IEEEFP) implemented = false;
             break;
 		default:
@@ -481,21 +481,33 @@ bool CImageTIFF::ReadData(void* pData, PIXELFORMAT dataFormat, Size nStride, Siz
 			}
 		}
 
-        uint8_t* data = (uint8_t*)pData;
-
-        // read image to a buffer and convert it
         const size_t buffer_size = m_stride * m_width * m_height;
         CLISTDEF0(uint8_t) _buffer(buffer_size);
         uint8_t* buffer = _buffer.Begin();
 
-        if (!TIFFReadRGBAImage(tif, m_width, m_height, (uint32*)buffer, 0)){
-            Close();
-            return false;
+        if (m_format == PF_B8G8R8A8 || m_format == PF_GRAY8){
+            // Simplified
+            if (!TIFFReadRGBAImageOriented(tif, m_width, m_height, (uint32*)buffer, ORIENTATION_TOPLEFT, 0)){
+                Close();
+                return false;
+            }
+        }else if (m_format == PF_GRAYU16){
+            for (uint32 y = 0; y < m_height; y++, buffer += m_lineWidth){
+                if (!TIFFReadScanline(tif, buffer, y, 0)){
+                    Close();
+                    return false;
+                }
+            }
+
+            buffer = _buffer.Begin();
         }
 
-        if (!FilterFormat(data, dataFormat, nStride, buffer, m_format, m_stride, m_width * m_height)) {
-            Close();
-            return false;
+        // Data not in the format we need?
+        if (dataFormat != m_format || nStride != m_stride){
+            if (!FilterFormat(pData, dataFormat, nStride, buffer, m_format, m_stride, m_width * m_height)) {
+                Close();
+                return false;
+            }
         }
 
         return true;
