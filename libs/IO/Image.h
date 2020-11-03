@@ -33,8 +33,8 @@ typedef enum PIXELFORMAT_TYPE {
 	PF_A8,
 	PF_GRAY8,
 	PF_GRAY32F, // 1 channel, 32-bit float (depth map)
-    PF_GRAYU16, // unsigned 16
-    PF_GRAYF32, // float 32
+	PF_GRAYU16, // unsigned 16
+	PF_GRAYF32, // float 32
 	// uncompressed RGB
 	PF_R5G6B5,
 	PF_R8G8B8,
