@@ -820,7 +820,7 @@ bool PointCloud::SaveNViews(const String& fileName, uint32_t minViews, bool bLeg
 		}
 	} else {
 		// describe what properties go into the vertex elements
-		ply.describe_property(BasicPLY::elem_names[0], 9, BasicPLY::Vertex::props);
+		ply.describe_property(BasicPLY::elem_names[0], 10, BasicPLY::Vertex::props);
 
 		// export the array of 3D points
 		FOREACH(i, points) {
@@ -830,6 +830,7 @@ bool PointCloud::SaveNViews(const String& fileName, uint32_t minViews, bool bLeg
 			vertex.p = points[i];
 			vertex.n = normals[i];
 			vertex.c = colors.empty() ? Pixel8U::WHITE : colors[i];
+			vertex.views.num = pointViews[i].size();
 			ply.put_element(&vertex);
 		}
 	}
