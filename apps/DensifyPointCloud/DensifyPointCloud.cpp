@@ -70,6 +70,7 @@ int nExportNumViews;
 int nArchiveType;
 int nProcessPriority;
 unsigned nMaxThreads;
+int mockCudaDevice;
 String strConfigFileName;
 boost::program_options::variables_map vm;
 } // namespace OPT
@@ -101,6 +102,8 @@ bool Initialize(size_t argc, LPCTSTR* argv)
 		#endif
 		#ifdef _USE_CUDA
 		("cuda-device", boost::program_options::value(&CUDA::desiredDeviceID)->default_value(-1), "CUDA device number to be used for depth-map estimation (-2 - CPU processing, -1 - best GPU, >=0 - device index)")
+		#else
+		("cuda-device", boost::program_options::value(&OPT::mockCudaDevice)->default_value(-1), "Just a placeholder (not a CUDA build)")
 		#endif
 		;
 
