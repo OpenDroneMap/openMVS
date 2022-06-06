@@ -41,7 +41,9 @@ cxx_library_with_type(MVS "Libs" "" "${cxx_default}"
 
 # Manually set Common.h as the precompiled header
 IF(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
-	TARGET_PRECOMPILE_HEADERS(MVS PRIVATE "Common.h")
+	if(NOT WIN32)
+		TARGET_PRECOMPILE_HEADERS(MVS PRIVATE "Common.h")
+	endif()
 endif()
 
 # Link its dependencies
