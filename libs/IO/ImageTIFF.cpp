@@ -401,13 +401,6 @@ bool CImageTIFF::ReadHeader()
 		m_level     = 0;
 		m_stride    = ncn;
 
-		if ((bpp == 32 && ncn == 3) || photometric == PHOTOMETRIC_LOGLUV) {
-			// this is HDR format with 3 floats per pixel
-			//TODO: implement
-			ASSERT("error: not implemented" == NULL);
-			Close();
-			return false;
-		}
 		if (bpp > 8 &&
 			((photometric != 2 && photometric != 1) ||
 				(ncn != 1 && ncn != 3 && ncn != 4)))
@@ -434,10 +427,16 @@ bool CImageTIFF::ReadHeader()
 				implemented = false;
 			break;
 		case 32:
-			m_format = PF_GRAYF32;
-			m_stride = 4;
-			if (ncn != 1 || sampleFormat != TIFF_SAMPLEFORMAT_IEEEFP) 
+			if (ncn == 1 && sampleFormat == TIFF_SAMPLEFORMAT_IEEEFP){
+				m_format = PF_GRAYF32;
+				m_stride = 4;
+			}else if (ncn == 3 && sampleFormat == TIFF_SAMPLEFORMAT_IEEEFP){
+				m_stride = 12;
+				m_format = PF_R32G32B32;
+			}else{
 				implemented = false;
+			}
+
 			break;
 		default:
 			// TODO: implement support for more
@@ -486,14 +485,13 @@ bool CImageTIFF::ReadData(void* pData, PIXELFORMAT dataFormat, Size nStride, Siz
 				Close();
 				return false;
 			}
-		}else if (m_format == PF_GRAYU16 || m_format == PF_GRAYF32){
+		}else if (m_format == PF_GRAYU16 || m_format == PF_GRAYF32 || m_format == PF_R32G32B32){
 			for (uint32 y = 0; y < m_height; y++, buffer += m_lineWidth){
 				if (!TIFFReadScanline(tif, buffer, y, 0)){
 					Close();
 					return false;
 				}
 			}
-
 			buffer = _buffer.Begin();
 		}
 
