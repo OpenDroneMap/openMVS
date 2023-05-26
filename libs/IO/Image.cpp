@@ -454,6 +454,28 @@ bool CImage::FilterFormat(void* pDst, PIXELFORMAT formatDst, Size strideDst, con
 			return true;
 		}
 
+		case PF_R16G16B16:{
+			// from PF_R16G16B16 to PF_R8G8B8
+			uint16_t *pData = (uint16_t*)pSrc;
+			std::pair<uint16_t, uint16_t> mm = Util::ComputePercentileMinMax<uint16_t>(pData, nSzize);
+			uint16_t min = mm.first;
+			uint16_t max = mm.second;
+
+			for (Size i=0; i<nSzize; ++i,(uint8_t*&)pDst+=strideDst,(uint8_t*&)pSrc+=strideSrc) {
+				uint16_t v1 = std::max(min, std::min(max, *((uint16_t*)pSrc)));
+				uint8_t c1 = (uint8_t)((255.0 * (double)(v1 - min) / (double)(max - min)) + 0.5);
+				uint16_t v2 = std::max(min, std::min(max, *((uint16_t*)pSrc + 1)));
+				uint8_t c2 = (uint8_t)((255.0 * (double)(v2 - min) / (double)(max - min)) + 0.5);
+				uint16_t v3 = std::max(min, std::min(max, *((uint16_t*)pSrc + 2)));
+				uint8_t c3 = (uint8_t)((255.0 * (double)(v3 - min) / (double)(max - min)) + 0.5);
+
+				((uint8_t*)pDst)[0] = c3;
+				((uint8_t*)pDst)[1] = c2;
+				((uint8_t*)pDst)[2] = c1;
+			}
+			return true;
+		}
+
 		case PF_R32G32B32:{
 			// from PF_R32G32B32 to PF_R8G8B8
 			float *pData = (float*)pSrc;
