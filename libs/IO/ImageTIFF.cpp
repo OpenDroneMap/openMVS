@@ -421,10 +421,16 @@ HRESULT CImageTIFF::ReadHeader()
 			}
 			break;
 		case 16:
-			m_format = PF_GRAYU16;
-			m_stride = 2;
-			if (ncn != 1 || sampleFormat != TIFF_SAMPLEFORMAT_UINT) 
+			if (ncn == 1 && sampleFormat == TIFF_SAMPLEFORMAT_UINT){
+				m_format = PF_GRAYU16;
+				m_stride = 2;
+			}else if (ncn == 3 && sampleFormat == TIFF_SAMPLEFORMAT_UINT){
+				m_format = PF_R16G16B16;
+				m_stride = 6;
+			}else{
 				implemented = false;
+			}
+
 			break;
 		case 32:
 			if (ncn == 1 && sampleFormat == TIFF_SAMPLEFORMAT_IEEEFP){
@@ -485,7 +491,7 @@ HRESULT CImageTIFF::ReadData(void* pData, PIXELFORMAT dataFormat, Size nStride, 
 				Close();
 				return _INVALIDFILE;
 			}
-		}else if (m_format == PF_GRAYU16 || m_format == PF_GRAYF32 || m_format == PF_R32G32B32){
+		}else if (m_format == PF_GRAYU16 || m_format == PF_GRAYF32 || m_format == PF_R32G32B32 || m_format == PF_R16G16B16){
 			for (uint32 y = 0; y < m_height; y++, buffer += m_lineWidth){
 				if (!TIFFReadScanline(tif, buffer, y, 0)){
 					Close();
