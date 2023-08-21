@@ -270,7 +270,7 @@ namespace BasicPLY {
 				ply.describe_property(elem_names[0], 3, props+3);
 			if (bNormals)
 				ply.describe_property(elem_names[0], 3, props+6);
-			if (bViews)
+			// if (bViews) // ODM: always output "views" in PLY
 				ply.describe_property(elem_names[0], props[9]);
 			// if (bWeights)
 			// 	ply.describe_property(elem_names[0], props[10]);
