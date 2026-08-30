@@ -70,6 +70,7 @@ int nExportNumViews;
 int nArchiveType;
 int nProcessPriority;
 unsigned nMaxThreads;
+int mockCudaDevice;
 String strConfigFileName;
 boost::program_options::variables_map vm;
 } // namespace OPT
@@ -101,6 +102,8 @@ bool Initialize(size_t argc, LPCTSTR* argv)
 		#endif
 		#ifdef _USE_CUDA
 		("cuda-device", boost::program_options::value(&CUDA::desiredDeviceID)->default_value(-1), "CUDA device number to be used for depth-map estimation (-2 - CPU processing, -1 - best GPU, >=0 - device index)")
+		#else
+		("cuda-device", boost::program_options::value(&OPT::mockCudaDevice)->default_value(-1), "Just a placeholder (not a CUDA build)")
 		#endif
 		;
 
@@ -196,7 +199,7 @@ bool Initialize(size_t argc, LPCTSTR* argv)
 	}
 
 	// initialize the log file
-	OPEN_LOGFILE(MAKE_PATH(APPNAME _T("-")+Util::getUniqueName(0)+_T(".log")).c_str());
+	//OPEN_LOGFILE(MAKE_PATH(APPNAME _T("-")+Util::getUniqueName(0)+_T(".log")).c_str());
 
 	// print application details: version and command line
 	Util::LogBuild();

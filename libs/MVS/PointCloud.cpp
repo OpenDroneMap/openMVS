@@ -270,20 +270,20 @@ namespace BasicPLY {
 				ply.describe_property(elem_names[0], 3, props+3);
 			if (bNormals)
 				ply.describe_property(elem_names[0], 3, props+6);
-			if (bViews)
+			// if (bViews) // ODM: always output "views" in PLY
 				ply.describe_property(elem_names[0], props[9]);
-			if (bWeights)
-				ply.describe_property(elem_names[0], props[10]);
-			if (bConfidence)
-				ply.describe_property(elem_names[0], props[11]);
-			if (bScale)
-				ply.describe_property(elem_names[0], props[12]);
+			// if (bWeights)
+			// 	ply.describe_property(elem_names[0], props[10]);
+			// if (bConfidence)
+			// 	ply.describe_property(elem_names[0], props[11]);
+			// if (bScale)
+			// 	ply.describe_property(elem_names[0], props[12]);
 			if (elem_count)
 				ply.element_count(elem_names[0], elem_count);
 		}
-		static const PLY::PlyProperty props[16];
+		static const PLY::PlyProperty props[10];
 	};
-	const PLY::PlyProperty Vertex::props[16] = {
+	const PLY::PlyProperty Vertex::props[10] = {
 		{"x",             PLY::Float32, PLY::Float32, offsetof(Vertex,p.x), 0, 0, 0, 0},
 		{"y",             PLY::Float32, PLY::Float32, offsetof(Vertex,p.y), 0, 0, 0, 0},
 		{"z",             PLY::Float32, PLY::Float32, offsetof(Vertex,p.z), 0, 0, 0, 0},
@@ -293,14 +293,15 @@ namespace BasicPLY {
 		{"nx",            PLY::Float32, PLY::Float32, offsetof(Vertex,n.x), 0, 0, 0, 0},
 		{"ny",            PLY::Float32, PLY::Float32, offsetof(Vertex,n.y), 0, 0, 0, 0},
 		{"nz",            PLY::Float32, PLY::Float32, offsetof(Vertex,n.z), 0, 0, 0, 0},
-		{"view_indices",  PLY::Uint32,  PLY::Uint32,  offsetof(Vertex,views.pIndices), 1, PLY::Uint8, PLY::Uint8, offsetof(Vertex,views.num)},
-		{"view_weights",  PLY::Float32, PLY::Float32, offsetof(Vertex,views.pWeights), 1, PLY::Uint8, PLY::Uint8, offsetof(Vertex,views.num)},
-		{"confidence",    PLY::Float32, PLY::Float32, offsetof(Vertex,confidence), 0, 0, 0, 0},
-		{"value",         PLY::Float32, PLY::Float32, offsetof(Vertex,scale), 0, 0, 0, 0},
+		{"views",         PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,views.num), 0, 0, 0, 0}
+		//{"view_indices",  PLY::Uint32,  PLY::Uint32,  offsetof(Vertex,views.pIndices), 1, PLY::Uint8, PLY::Uint8, offsetof(Vertex,views.num)},
+		//{"view_weights",  PLY::Float32, PLY::Float32, offsetof(Vertex,views.pWeights), 1, PLY::Uint8, PLY::Uint8, offsetof(Vertex,views.num)},
+		//{"confidence",    PLY::Float32, PLY::Float32, offsetof(Vertex,confidence), 0, 0, 0, 0},
+		//{"value",         PLY::Float32, PLY::Float32, offsetof(Vertex,scale), 0, 0, 0, 0},
 		// duplicates
-		{"diffuse_red",   PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,c.r), 0, 0, 0, 0},
-		{"diffuse_green", PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,c.g), 0, 0, 0, 0},
-		{"diffuse_blue",  PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,c.b), 0, 0, 0, 0}
+		//{"diffuse_red",   PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,c.r), 0, 0, 0, 0},
+		//{"diffuse_green", PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,c.g), 0, 0, 0, 0},
+		//{"diffuse_blue",  PLY::Uint8,   PLY::Uint8,   offsetof(Vertex,c.b), 0, 0, 0, 0}
 	};
 } // namespace BasicPLY
 } // namespace PointCloudInternal
@@ -438,7 +439,7 @@ bool PointCloud::SaveNViews(const String& fileName, uint32_t minViews, bool bLeg
 		}
 	} else {
 		// describe what properties go into the vertex elements
-		ply.describe_property(BasicPLY::elem_names[0], 9, BasicPLY::Vertex::props);
+		ply.describe_property(BasicPLY::elem_names[0], 10, BasicPLY::Vertex::props);
 
 		// export the array of 3D points
 		FOREACH(i, points) {
@@ -448,6 +449,7 @@ bool PointCloud::SaveNViews(const String& fileName, uint32_t minViews, bool bLeg
 			vertex.p = points[i];
 			vertex.n = normals[i];
 			vertex.c = colors.empty() ? Pixel8U::WHITE : colors[i];
+			vertex.views.num = pointViews[i].size();
 			ply.put_element(&vertex);
 		}
 	}

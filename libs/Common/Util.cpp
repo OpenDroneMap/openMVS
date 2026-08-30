@@ -434,16 +434,16 @@ String Util::GetOSInfo()
 
 String Util::GetDiskInfo(const String& path)
 {
-	#if defined(_SUPPORT_CPP17) && (!defined(__GNUC__) || (__GNUC__ > 7))
+	// #if defined(_SUPPORT_CPP17) && (!defined(__GNUC__) || (__GNUC__ > 8))
 
-	const std::filesystem::space_info si = std::filesystem::space(path.c_str());
-	return String::FormatString("%s (%s) space", formatBytes(si.available).c_str(), formatBytes(si.capacity).c_str());
+	// const std::filesystem::space_info si = std::filesystem::space(path.c_str());
+	// return String::FormatString("%s (%s) space", formatBytes(si.available).c_str(), formatBytes(si.capacity).c_str());
 
-	#else
+	// #else
 
 	return String();
 
-	#endif // _SUPPORT_CPP17
+	// #endif // _SUPPORT_CPP17
 }
 /*----------------------------------------------------------------*/
 

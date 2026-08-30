@@ -468,7 +468,7 @@ public:
 		if (flags & NOBUFFER)
 			m |= O_DIRECT;
 		#endif
-		h = ::open(aFileName, m, S_IRUSR | S_IWUSR);
+		h = ::open(aFileName, m, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	}
 
 	virtual void close() {

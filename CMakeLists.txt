@@ -50,8 +50,8 @@ ENDIF()
 # ${OpenMVS_BINARY_DIR}.
 PROJECT(OpenMVS)
 
-cmake_policy(SET CMP0127 NEW)
-cmake_dependent_option(OpenMVS_USE_SSE "Enable SSE optimizations" ON "NOT CMAKE_SYSTEM_PROCESSOR MATCHES \"^(arm|ARM|aarch64|AARCH64).\"" OFF)
+# cmake_policy(SET CMP0127 NEW)
+# cmake_dependent_option(OpenMVS_USE_SSE "Enable SSE optimizations" ON "NOT CMAKE_SYSTEM_PROCESSOR MATCHES \"^(arm|ARM|aarch64|AARCH64).\"" OFF)
 
 SET(OpenMVS_MAJOR_VERSION 2)
 SET(OpenMVS_MINOR_VERSION 2)

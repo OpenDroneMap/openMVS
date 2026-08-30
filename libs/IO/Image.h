@@ -32,11 +32,15 @@ typedef enum PIXELFORMAT_TYPE {
 	// gray
 	PF_A8,
 	PF_GRAY8,
+	PF_GRAYU16, // unsigned 16
+	PF_GRAYF32, // float 32
 	// uncompressed RGB
 	PF_R5G6B5,
 	PF_R8G8B8,
 	PF_R8G8B8A8,
 	PF_A8R8G8B8,
+	PF_R16G16B16,
+	PF_R32G32B32,
 	// uncompressed BGR
 	PF_B8G8R8,
 	PF_B8G8R8A8,
@@ -124,5 +128,6 @@ typedef CSharedPtr<CImage> IMAGEPTR;
 /*----------------------------------------------------------------*/
 
 } // namespace SEACAVE
+
 
 #endif // __SEACAVE_IMAGE_H__
