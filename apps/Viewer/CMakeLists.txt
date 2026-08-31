@@ -73,7 +73,9 @@ endif()
 
 # Manually set Common.h as the precompiled header
 IF(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
-	TARGET_PRECOMPILE_HEADERS(${VIEWER_NAME} PRIVATE "Common.h")
+	if(NOT WIN32) # Smaller but slower build on Windows
+		TARGET_PRECOMPILE_HEADERS(${VIEWER_NAME} PRIVATE "Common.h")
+	endif()
 endif()
 
 if(APPLE)

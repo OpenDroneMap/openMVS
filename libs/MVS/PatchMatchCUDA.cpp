@@ -305,6 +305,7 @@ void PatchMatch::EstimateDepthMap(DepthData& depthData)
 					cv::resize(depthMap, depthMap, image.size(), 0, 0, cv::INTER_LINEAR);
 				CUDA_CHECK(cudaMemcpy2DToArray(cudaDepthArrays[i-1], 0, 0, depthMap.ptr<float>(), depthMap.step[0], sizeof(float) * depthMap.cols, depthMap.rows, cudaMemcpyHostToDevice));
 			}
+
 			images[i] = std::move(image);
 			cameras[i] = std::move(camera);
 		}
@@ -406,6 +407,7 @@ void PatchMatch::EstimateDepthMap(DepthData& depthData)
 			lowResNormalMap = depthData.normalMap;
 			lowResViewsMap = depthData.viewsMap;
 		}
+
 	}
 
 	// apply ignore mask
