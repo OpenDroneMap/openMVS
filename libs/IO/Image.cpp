@@ -194,6 +194,8 @@ CImage::Size CImage::GetStride(PIXELFORMAT pixFormat)
 	{
 	case PF_A8:
 	case PF_GRAY8:
+	case PF_GRAYU16:
+	case PF_GRAYF32:
 		return 1;
 	case PF_R5G6B5:
 		return 2;
@@ -237,6 +239,8 @@ bool CImage::FormatHasAlpha(PIXELFORMAT format)
 	case PF_DXT5:
 		return true;
 	case PF_GRAY8:
+	case PF_GRAYU16:
+	case PF_GRAYF32:
 	case PF_R5G6B5:
 	case PF_B8G8R8:
 	case PF_R8G8B8:
@@ -409,6 +413,91 @@ bool CImage::FilterFormat(void* pDst, PIXELFORMAT formatDst, Size strideDst, con
 				((uint8_t*)pDst)[2] = ((uint8_t*)pSrc)[1];
 			}
 			return true;
+
+		case PF_GRAYU16:{
+			// from PF_GRAYU16 to PF_R8G8B8
+			
+			uint16_t *pData = (uint16_t*)pSrc;
+			std::pair<uint16_t, uint16_t> mm = Util::ComputePercentileMinMax<uint16_t>(pData, nSzize);
+			uint16_t min = mm.first;
+			uint16_t max = mm.second;
+
+			for (Size i=0; i<nSzize; ++i,(uint8_t*&)pDst+=strideDst,(uint8_t*&)pSrc+=strideSrc) {
+				uint16_t v = std::max(min, std::min(max, *((uint16_t*)pSrc)));
+				uint8_t c = (uint8_t)((255.0 * (double)(v - min) / (double)(max - min)) + 0.5);
+
+				((uint8_t*)pDst)[0] = c;
+				((uint8_t*)pDst)[1] = c;
+				((uint8_t*)pDst)[2] = c;
+				
+			}
+			return true;
+		}
+		
+		case PF_GRAYF32:{
+			// from PF_GRAYF32 to PF_R8G8B8
+
+			float *pData = (float*)pSrc;
+			std::pair<float, float> mm = Util::ComputePercentileMinMax<float>(pData, nSzize);
+			float min = mm.first;
+			float max = mm.second;
+
+			for (Size i=0; i<nSzize; ++i,(uint8_t*&)pDst+=strideDst,(uint8_t*&)pSrc+=strideSrc) {
+				float v = std::max(min, std::min(max, *((float*)pSrc)));
+				uint8_t c = (uint8_t)((255.0 * (double)(v - min) / (double)(max - min)) + 0.5);
+
+				((uint8_t*)pDst)[0] = c;
+				((uint8_t*)pDst)[1] = c;
+				((uint8_t*)pDst)[2] = c;
+				
+			}
+			return true;
+		}
+
+		case PF_R16G16B16:{
+			// from PF_R16G16B16 to PF_R8G8B8
+			uint16_t *pData = (uint16_t*)pSrc;
+			std::pair<uint16_t, uint16_t> mm = Util::ComputePercentileMinMax<uint16_t>(pData, nSzize);
+			uint16_t min = mm.first;
+			uint16_t max = mm.second;
+
+			for (Size i=0; i<nSzize; ++i,(uint8_t*&)pDst+=strideDst,(uint8_t*&)pSrc+=strideSrc) {
+				uint16_t v1 = std::max(min, std::min(max, *((uint16_t*)pSrc)));
+				uint8_t c1 = (uint8_t)((255.0 * (double)(v1 - min) / (double)(max - min)) + 0.5);
+				uint16_t v2 = std::max(min, std::min(max, *((uint16_t*)pSrc + 1)));
+				uint8_t c2 = (uint8_t)((255.0 * (double)(v2 - min) / (double)(max - min)) + 0.5);
+				uint16_t v3 = std::max(min, std::min(max, *((uint16_t*)pSrc + 2)));
+				uint8_t c3 = (uint8_t)((255.0 * (double)(v3 - min) / (double)(max - min)) + 0.5);
+
+				((uint8_t*)pDst)[0] = c3;
+				((uint8_t*)pDst)[1] = c2;
+				((uint8_t*)pDst)[2] = c1;
+			}
+			return true;
+		}
+
+		case PF_R32G32B32:{
+			// from PF_R32G32B32 to PF_R8G8B8
+			float *pData = (float*)pSrc;
+			std::pair<float, float> mm = Util::ComputePercentileMinMax<float>(pData, nSzize);
+			float min = mm.first;
+			float max = mm.second;
+
+			for (Size i=0; i<nSzize; ++i,(uint8_t*&)pDst+=strideDst,(uint8_t*&)pSrc+=strideSrc) {
+				float v1 = std::max(min, std::min(max, *((float*)pSrc)));
+				uint8_t c1 = (uint8_t)((255.0 * (double)(v1 - min) / (double)(max - min)) + 0.5);
+				float v2 = std::max(min, std::min(max, *((float*)pSrc + 1)));
+				uint8_t c2 = (uint8_t)((255.0 * (double)(v2 - min) / (double)(max - min)) + 0.5);
+				float v3 = std::max(min, std::min(max, *((float*)pSrc + 2)));
+				uint8_t c3 = (uint8_t)((255.0 * (double)(v3 - min) / (double)(max - min)) + 0.5);
+
+				((uint8_t*)pDst)[0] = c3;
+				((uint8_t*)pDst)[1] = c2;
+				((uint8_t*)pDst)[2] = c1;
+			}
+			return true;
+		}
+
 		}
 		break;
 
